@@ -1,10 +1,10 @@
 import express from 'express';
-import { createUser, getUserByEmail } from 'db/users';
-import { authenticationNeedle, randomizer } from 'helpers';
+import { createUser, getUserByEmail } from '../db/users';
+import { authenticationNeedle, randomizer } from '../helpers';
 
 export const register = async (req: express.Request, res: express.Response) => {
    try {
-     const { email, password, username } = req.body;
+     const { email, password, username } = req.body;  // extract data that we expect from our body
 
      if (!email || !password || !username) {
       return res.sendStatus(400);
@@ -27,7 +27,7 @@ export const register = async (req: express.Request, res: express.Response) => {
      });
 
      return res.status(200).json(user).end();
-
+     
    } catch (error) {
      console.log(error);
      return res.sendStatus(400); 

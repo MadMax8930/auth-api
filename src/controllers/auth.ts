@@ -1,6 +1,6 @@
 import express from 'express';
 import { createUser, getUserByEmail } from '../db/users';
-import { authenticationNeedle, randomizer } from '../helpers';
+import { authenticationUtil, randomizer } from '../helpers';
 
 export const login = async (req: express.Request, res: express.Response) => {
    try {
@@ -10,11 +10,11 @@ export const login = async (req: express.Request, res: express.Response) => {
      const user = await getUserByEmail(email).select('+authentication.salt +authentication.password');
      if (!user) { return res.sendStatus(400); }
 
-     const expectedHash = authenticationNeedle(user.authentication.salt, password);
+     const expectedHash = authenticationUtil(user.authentication.salt, password);
      if (user.authentication.password !== expectedHash) { return res.sendStatus(403); }
 
      const salt = randomizer();  // Update user sessionToken
-     user.authentication.sessionToken = authenticationNeedle(salt, user._id.toString());
+     user.authentication.sessionToken = authenticationUtil(salt, user._id.toString());
      await user.save();
 
      // Set the cookie
@@ -42,7 +42,7 @@ export const register = async (req: express.Request, res: express.Response) => {
          username,
          authentication: {
             salt,
-            password: authenticationNeedle(salt, password),
+            password: authenticationUtil(salt, password),
          },
      });
 
